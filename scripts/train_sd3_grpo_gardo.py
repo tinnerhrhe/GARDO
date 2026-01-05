@@ -631,7 +631,7 @@ def main(_):
     data_config = timm.data.resolve_model_data_config(dinov3)
     transforms = timm.data.create_transform(**data_config, is_training=False)
     dynamic_controller =RiskCompensator()
-    thres = 5e-4
+    thres = config.kl_thres
     prev_epoch = 0
     # set_old = False
     for src_param, tgt_param in zip(

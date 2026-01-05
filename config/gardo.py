@@ -104,6 +104,7 @@ def compressibility():
     # rewards
     config.reward_fn = {"jpeg_compressibility": 1}
     config.per_prompt_stat_tracking = True
+    config.kl_thres = 3e-4 #Please set this hyper-parameter according to specific tasks.
     return config
 
 def general_ocr_sd3():
