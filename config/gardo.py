@@ -20,7 +20,7 @@ def _get_config(base_model="sd3", n_gpus=1, gradient_step_per_epoch=1, dataset="
         config.sample.eval_num_steps = 40
         config.sample.guidance_scale = 4.5
         config.resolution = 512
-        config.train.beta = 0.02
+        config.train.beta = 0.04
         config.sample.noise_level = 0.7
         bsz = 9
 
@@ -136,7 +136,7 @@ def general_ocr_sd3():
     config.train.num_inner_epochs = 1
     config.train.timestep_fraction = 0.89
     # kl loss
-    config.train.beta = 0.01#0.004
+    config.train.beta = 0.04#0.004
     # kl reward
     # KL reward and KL loss are two ways to incorporate KL divergence. KL reward adds KL to the reward, while KL loss, introduced by GRPO, directly adds KL loss to the policy loss. We support both methods, but KL loss is recommended as the preferred option.
     config.sample.kl_reward = 0
