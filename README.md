@@ -33,7 +33,7 @@ Fine-tuning diffusion models via online reinforcement learning (RL) suffers from
 Set up the environment
 ```
 git clone https://github.com/tinnerhrhe/GARDO.git
-cd GARDO/flow_grpo
+cd GARDO
 conda create -n gardo python=3.10 -y
 conda activate gardo
 pip install -e .
@@ -43,6 +43,11 @@ pip install -e .
 &#128073; To implement the diversity-aware advantage shaping, please download the [dinov3](https://github.com/facebookresearch/dinov3) model and set the path in the codes:
 ```
 huggingface-cli download timm/vit_large_patch16_dinov3.lvd1689m --local-dir <your path>
+```
+### Start Training
+After downloading all the required models and setting up the environment, run the following script to start training the GARDO.
+```
+bash scripts/single_node/grpo_gardo_sd3.sh 
 ```
 
 ## 📜 Citation

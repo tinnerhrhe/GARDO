@@ -3,6 +3,84 @@ import imp
 import os
 
 base = imp.load_source("base", os.path.join(os.path.dirname(__file__), "base.py"))
+def get_config(name):
+    return globals()[name]()
+
+
+def _get_config(base_model="sd3", n_gpus=1, gradient_step_per_epoch=1, dataset="pickscore", reward_fn={}, name=""):
+    config = base.get_config()
+    assert base_model in ["sd3"]
+    assert dataset in ["pickscore", "ocr", "geneval"]
+
+    config.base_model = base_model
+    config.dataset = os.path.join(os.getcwd(), f"dataset/{dataset}")
+    if base_model == "sd3":
+        config.pretrained.model = "stabilityai/stable-diffusion-3.5-medium"
+        config.sample.num_steps = 10
+        config.sample.eval_num_steps = 40
+        config.sample.guidance_scale = 4.5
+        config.resolution = 512
+        config.train.beta = 0.02
+        config.sample.noise_level = 0.7
+        bsz = 9
+
+    config.sample.num_image_per_prompt = 24
+    num_groups = 48
+
+    while True:
+        if bsz < 1:
+            assert False, "Cannot find a proper batch size."
+        if (
+            num_groups * config.sample.num_image_per_prompt % (n_gpus * bsz) == 0
+            and bsz * n_gpus % config.sample.num_image_per_prompt == 0
+        ):
+            n_batch_per_epoch = num_groups * config.sample.num_image_per_prompt // (n_gpus * bsz)
+            if n_batch_per_epoch % gradient_step_per_epoch == 0:
+                config.sample.train_batch_size = bsz
+                config.sample.num_batches_per_epoch = n_batch_per_epoch
+                config.train.batch_size = config.sample.train_batch_size
+                config.train.gradient_accumulation_steps = (
+                    config.sample.num_batches_per_epoch // gradient_step_per_epoch
+                )
+                break
+        bsz -= 1
+
+    # special design, the test set has a total of 1018/2212/2048 for ocr/geneval/pickscore, to make gpu_num*bs*n as close as possible to it, because when the number of samples cannot be divided evenly by the number of cards, multi-card will fill the last batch to ensure each card has the same number of samples, affecting gradient synchronization.
+    config.sample.test_batch_size = 14 if dataset == "geneval" else 16
+    if n_gpus > 32:
+        config.sample.test_batch_size = config.sample.test_batch_size // 2
+
+    config.prompt_fn = "geneval" if dataset == "geneval" else "general_ocr"
+    
+    config.run_name = f"nft_{base_model}_{name}-kl002"
+    config.save_dir = f"./nft-kl002"
+    config.reward_fn = reward_fn
+    config.save_freq = 60 # epoch
+    config.eval_freq = 60
+    config.decay_type = 1
+    config.beta = 1.0
+    config.train.adv_mode = "all"
+    config.num_epochs = 100000
+    config.sample.guidance_scale = 1.0
+    config.sample.deterministic = True
+    config.sample.solver = "dpm2"
+    return config
+def nft_sd3_geneval():
+    reward_fn = {
+        "geneval": .8,
+        "aesthetic":0.05,
+        "imagereward": 0.15,
+    }
+    config = _get_config(
+        base_model="sd3",
+        n_gpus=8,
+        gradient_step_per_epoch=1,
+        dataset="geneval",
+        reward_fn=reward_fn,
+        name="geneval",
+    )
+    config.main_reward='geneval'
+    return config
 
 def compressibility():
     config = base.get_config()
@@ -36,6 +114,7 @@ def general_ocr_sd3():
     config.sample.num_steps = 10
     config.sample.eval_num_steps = 40
     config.sample.guidance_scale=4.5
+    gpu_number = 8
     # config.train.lora_path=''
     # # 8*A800
     # config.resolution = 512
@@ -47,9 +126,9 @@ def general_ocr_sd3():
     # 1 A800 This is just to ensure it runs quickly on a single GPU, though the performance may degrade.
     # If using 8 GPUs, please comment out this section and use the 8-GPU configuration above instead.
     config.resolution = 512
-    config.sample.train_batch_size = 6
-    config.sample.num_image_per_prompt = 6
-    config.sample.num_batches_per_epoch = 12
+    config.sample.train_batch_size = 9
+    config.sample.num_image_per_prompt = 24
+    config.sample.num_batches_per_epoch = int(48/(gpu_number*config.sample.train_batch_size/config.sample.num_image_per_prompt))
     config.sample.test_batch_size = 16 # 11 is a special design, the test set has a total of 1018, to make 8*16*n as close as possible to 1018, because when the number of samples cannot be divided evenly by the number of cards, multi-card will fill the last batch to ensure each card has the same number of samples, affecting gradient synchronization.
 
     config.train.batch_size = config.sample.train_batch_size
@@ -101,12 +180,13 @@ def geneval_sd3():
     config.sample.num_steps = 10 # 40
     config.sample.eval_num_steps = 40
     config.sample.guidance_scale=4.5
+    gpu_number = 8
     # config.train.lora_path=''
     # 8 cards to start LLaVA Server
     config.resolution = 512
-    config.sample.train_batch_size = 6
-    config.sample.num_image_per_prompt = 6
-    config.sample.num_batches_per_epoch = 12
+    config.sample.train_batch_size = 9
+    config.sample.num_image_per_prompt = 24
+    config.sample.num_batches_per_epoch = int(48/(gpu_number*config.sample.train_batch_size/config.sample.num_image_per_prompt))
     config.sample.test_batch_size = 14 # This bs is a special design, the test set has a total of 2212, to make gpu_num*bs*n as close as possible to 2212, because when the number of samples cannot be divided evenly by the number of cards, multi-card will fill the last batch to ensure each card has the same number of samples, affecting gradient synchronization.
 
     config.train.batch_size = config.sample.train_batch_size
@@ -139,7 +219,7 @@ def geneval_sd3():
 def hps_flux():
     config = compressibility()
     config.dataset = os.path.join(os.getcwd(), "dataset/hps")
-    # gpu_number=8
+    gpu_number=8
     # sd3.5 medium
     config.pretrained.model = "black-forest-labs/FLUX.1-dev"
     config.sample.num_steps = 6 # 40
@@ -149,8 +229,8 @@ def hps_flux():
     # 8 cards to start LLaVA Server
     config.resolution = 512
     config.sample.train_batch_size = 3
-    config.sample.num_image_per_prompt = 6
-    config.sample.num_batches_per_epoch = 12#int(48/(gpu_number*config.sample.train_batch_size/config.sample.num_image_per_prompt))
+    config.sample.num_image_per_prompt = 24
+    config.sample.num_batches_per_epoch = int(48/(gpu_number*config.sample.train_batch_size/config.sample.num_image_per_prompt))
     config.sample.test_batch_size = 14 # This bs is a special design, the test set has a total of 2212, to make gpu_num*bs*n as close as possible to 2212, because when the number of samples cannot be divided evenly by the number of cards, multi-card will fill the last batch to ensure each card has the same number of samples, affecting gradient synchronization.
 
     config.train.batch_size = config.sample.train_batch_size

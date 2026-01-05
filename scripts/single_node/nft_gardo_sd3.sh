@@ -1,0 +1,1 @@
+accelerate launch --config_file scripts/accelerate_configs/multi_gpu.yaml --num_processes=8 --main_process_port 29503 scripts/train_sd3_nft_gardo.py --config config/gardo.py:nft_sd3_geneval
