@@ -54,7 +54,7 @@ bash scripts/single_node/grpo_gardo_sd3.sh
 If you find our work helpful, please kindly cite our paper:
 ```
 @misc{he2025gardo,
-    title={Scaling Image and Video Generation via Test-Time Evolutionary Search},
+    title={GARDO: Reinforcing Diffusion Models without Reward Hacking},
     author={Haoran He and Yuxiao Ye and Jie Liu and Jiajun Liang and Zhiyong Wang and Ziyang Yuan and Xintao Wang and Hangyu Mao and Pengfei Wan and Ling Pan},
     year={2025},
     eprint={2512.24138},
