@@ -12,6 +12,12 @@
       alt="GARDO Paper on arXiv"
     />
   </a>
+  <a href="https://x.com/tinner_he/status/2008365421225722005">
+    <img
+      src="https://img.shields.io/badge/GARDO-Threads-red?logo=X&logoColor=black"
+      alt="GARDO twitter"
+    />
+  </a>
   </p>
 
 ## 📖 Introduction
