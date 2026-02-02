@@ -1055,7 +1055,7 @@ def main(_):
                         kl_div_loss = ((forward_prediction - ref_forward_prediction) ** 2).mean(
                         dim=tuple(range(1, x0.ndim))
                     )
-                        # kl_div_loss=kl_div_loss*0
+                        kl_div_loss=kl_div_loss*0
                     loss += config.train.beta * torch.mean(kl_div_loss)
                     kl_div_loss = torch.mean(kl_div_loss)
                     loss_terms["kl_div_loss"] = torch.mean(kl_div_loss).detach()
