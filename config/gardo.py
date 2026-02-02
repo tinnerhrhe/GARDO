@@ -20,7 +20,7 @@ def _get_config(base_model="sd3", n_gpus=1, gradient_step_per_epoch=1, dataset="
         config.sample.eval_num_steps = 40
         config.sample.guidance_scale = 4.5
         config.resolution = 512
-        config.train.beta = 0.04
+        config.train.beta = 0.08
         config.sample.noise_level = 0.7
         bsz = 9
 
