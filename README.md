@@ -43,6 +43,7 @@ cd GARDO
 conda create -n gardo python=3.10 -y
 conda activate gardo
 pip install -e .
+pip install timm==1.0.20 hpsv2x==1.2.0 hpsv3
 ```
 &#128073; Please follow the instructions of [Flow-GRPO](https://github.com/yifan123/flow_grpo#3-reward-preparation) for reward preparation. We support [GenEval](https://github.com/djghosh13/geneval), [OCR](https://github.com/PaddlePaddle/PaddleOCR), [PickScore](https://github.com/yuvalkirstain/PickScore), [ClipScore](https://github.com/openai/CLIP), [HPSv3](https://github.com/MizzenAI/HPSv3), [Aesthetic](https://github.com/christophschuhmann/improved-aesthetic-predictor), [ImageReward](https://github.com/zai-org/ImageReward) and [UnifiedReward](https://github.com/CodeGoat24/UnifiedReward) for training and evaluation.
 
