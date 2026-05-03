@@ -1,24 +1,5 @@
 # GARDO: Reinforcing Diffusion Models without Reward Hacking
-<p align="center">
-  <a href="https://tinnerhrhe.github.io/gardo_project/">
-    <img
-      src="https://img.shields.io/badge/GARDO-project-0A66C2?logo=googlechrome&logoColor=white"
-      alt="GARDO Website"
-    />
-  </a>
-  <a href="https://arxiv.org/abs/2512.24138">
-    <img
-      src="https://img.shields.io/badge/GARDO-Paper-red?logo=arxiv&logoColor=red"
-      alt="GARDO Paper on arXiv"
-    />
-  </a>
-  <a href="https://x.com/tinner_he/status/2008365421225722005">
-    <img
-      src="https://img.shields.io/badge/GARDO-Threads-red?logo=X&logoColor=black"
-      alt="GARDO twitter"
-    />
-  </a>
-  </p>
+
 
 ## 📖 Introduction
 Fine-tuning diffusion models via online reinforcement learning (RL) suffers from reward hacking, where proxy scores increase while real image quality deteriorates and generation diversity collapses. To address the competing demands of *sample efficiency*, *effective exploration*, and *mitigation of reward hacking*, we propose **G**ated and **A**daptive **R**egularization with **D**iversity-aware **O**ptimization (**GARDO**), a versatile framework compatible with various RL algorithms. GARDO can be applied on both [Flow-GRPO](https://github.com/yifan123/flow_grpo) and [DiffusionNFT](https://github.com/NVlabs/DiffusionNFT).
@@ -57,15 +38,4 @@ After downloading all the required models and setting up the environment, run th
 bash scripts/single_node/grpo_gardo_sd3.sh 
 ```
 
-## 📜 Citation
-If you find our work helpful, please kindly cite our paper:
-```
-@misc{he2025gardo,
-    title={GARDO: Reinforcing Diffusion Models without Reward Hacking},
-    author={Haoran He and Yuxiao Ye and Jie Liu and Jiajun Liang and Zhiyong Wang and Ziyang Yuan and Xintao Wang and Hangyu Mao and Pengfei Wan and Ling Pan},
-    year={2025},
-    eprint={2512.24138},
-    archivePrefix={arXiv},
-    primaryClass={cs.LG}
-}
-```
+
